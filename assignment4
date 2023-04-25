@@ -1,0 +1,41 @@
+
+
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+df = pd.read_csv('vehicles.csv')
+
+x = df[['price', 'year', 'mileage']]
+
+pn_components = 2
+x_pca = pn_components.fit_transform(x)
+
+
+i = []
+for k in range(1, 11):
+    kmeans = k(n_clusters=k, random_state=42)
+    kmeans.fit(x)
+    i.append(kmeans.i)
+
+
+    plt.plot(range(1, 11), i, marker='o')
+    plt.xlabel('no. of Clusters (k)')
+    plt.ylabel('Inertia')
+    plt.show()
+
+
+k = 3
+kmeans = k(n_clusters=k, random_state=42)
+kmeans.fit(x)
+labels = kmeans.labels_
+
+df['cluster'] = labels
+cluster_0 = df[df['cluster'] == 0]
+cluster_1 = df[df['cluster'] == 1]
+cluster_2 = df[df['cluster'] == 2]
+
+print("Cluster 0:")
+print("Cluster 1:")
+print("Cluster 2:")
+
