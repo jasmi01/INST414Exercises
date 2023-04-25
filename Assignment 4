@@ -1,0 +1,44 @@
+
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+df = pd.read_csv('vehicles.csv')
+
+X = df[['price', 'year', 'mileage']]
+
+pca = PCA(n_components=2)
+X_pca = pca.fit_transform(X_scaled)
+
+
+i = []
+for k in range(1, 11):
+    kmeans = KMeans(n_clusters=k, random_state=42)
+    kmeans.fit(X_scaled)
+    i.append(kmeans.i)
+
+# Plot the Elbow Method results
+plt.plot(range(1, 11), inertias, marker='o')
+plt.xlabel('Number of Clusters (k)')
+plt.ylabel('Inertia')
+plt.title('Elbow Method for Optimal k')
+plt.show()
+
+
+k = 3
+kmeans = KMeans(n_clusters=k, random_state=42)
+kmeans.fit(X_scaled)
+labels = kmeans.labels_
+
+df['cluster'] = labels
+cluster_0 = df[df['cluster'] == 0]
+cluster_1 = df[df['cluster'] == 1]
+cluster_2 = df[df['cluster'] == 2]
+
+print("Cluster 0:")
+print(cluster_0.describe())
+print("\nCluster 1:")
+print(cluster_1.describe())
+print("\nCluster 2:")
+print(cluster_2.describe())
+
