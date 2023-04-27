@@ -1,18 +1,21 @@
-import pandas as pd
-import matplotlib.pyplot as plt
+import tweepy
 
+consumer_key = 'your_consumer_key'
+consumer_secret = 'your_consumer_secret'
+access_token = 'your_access_token'
+access_token_secret = 'your_access_token_secret'
 
-df = pd.read_csv("tweets.csv")
+auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
+auth.set_access_token(access_token, access_token_secret)
 
-df['words'] = df['text'].str.split()
+api = tweepy.API(auth)
 
-word_list = [word for words in df['words'] for word in words]
-word_counts = pd.Series(word_list).value_counts()
+query = 'climate change'
+language = 'en'
+max_tweets = 1000
 
-plt.bar(word_counts[:20].index, word_counts[:20].values)
-plt.xticks(rotation=90)
-plt.xlabel('Word')
-plt.ylabel('Frequency')
-plt.title('Most frequently used words in tweets about climate change')
-plt.show()
+tweets = tweepy.Cursor(api.search, q=query, lang=language).items(max_tweets)
+
+for tweet in tweets:
+    print(tweet.text)
 
