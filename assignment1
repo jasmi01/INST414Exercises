@@ -1,0 +1,11 @@
+import pandas as pd
+data = pd.read_csv('tweets.csv')
+
+topic_counts = data['Topic'].value_counts()
+
+topic_sentiments = data.groupby('Topic')['Sentiment'].apply(lambda x: x.mode()[0])
+
+results = pd.DataFrame({'Frequency': topic_counts, 'Sentiment': topic_sentiments})
+results = results.sort_values('Frequency', ascending=False)
+
+print(results.head(10))
