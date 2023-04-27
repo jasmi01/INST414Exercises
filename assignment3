@@ -1,0 +1,36 @@
+import pandas as pd
+
+movies = pd.read_csv('movies.csv')
+ratings = pd.read_csv('ratings.csv')
+
+unique_genres = list(set([genre for genres in movies['genres'].str.split('|') for genre in genres]))
+
+# create a one-hot encoded matrix of genres
+genre_matrix = pd.DataFrame(columns=unique_genres, index=movies.index)
+
+for i, row in movies.iterrows():
+    for genre in row['genres'].split('|'):
+        genre_matrix.at[i, genre] = 1
+
+unique_actors = list(set([actor for actors in movies['actors'].str.split('|') for actor in actors]))
+
+# create a one-hot encoded matrix of actors
+actor_matrix = pd.DataFrame(columns=unique_actors, index=movies.index)
+
+for i, row in movies.iterrows():
+    for actor in row['actors'].split('|'):
+        actor_matrix.at[i, actor] = 1
+
+
+feature_matrix = pd.concat([genre_matrix, actor_matrix, ratings], axis=1)
+from sklearn.metrics.pairwise import cosine_similarity
+
+#
+cosine_sim_matrix = cosine_similarity(feature_matrix)
+query_item = 'The Matrix'
+query_item_index = movies[movies['title'] == query_item].index[0]
+similar_movies = list(enumerate(cosine_sim_matrix[query_item_index]))
+sorted_similar_movies = sorted(similar_movies, key=lambda x: x[1], reverse=True)[1:11]
+most_similar_movie_indices = [i[0] for i in sorted_similar_movies]
+
+print(movies.iloc[most_similar_movie_indices]['title'])
