@@ -1,0 +1,29 @@
+import requests
+from bs4 import BeautifulSoup
+import networkx as nx
+import pandas as pd
+
+url = 'https://www.alexa.com/topsites'
+response = requests.get(url)
+soup = BeautifulSoup(response.text, 'html.parser')
+sites = soup.select('.DescriptionCell a')
+
+domains = [site.text for site in sites]
+
+
+G = nx.Graph()
+#add nodes
+for domain in domains:
+    G.add_node(domain)
+#add edges
+for i in range(len(domains)):
+    for j in range(i+1, len(domains)):
+        domain1 = domains[i]
+        domain2 = domains[j]
+        if links_exist(domain1, domain2):
+            G.add_edge(domain1, domain2)
+
+# calculate degree centrality for each node
+degree_centrality = nx.degree_centrality(G)
+df = pd.DataFrame({'Website': list(degree_centrality.keys()), 'Degree Centrality': list(degree_centrality.values())})
+df = df.sort_values('Degree Centrality', ascending=False)
